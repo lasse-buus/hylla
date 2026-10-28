@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+
+/* Hylla design tokens, taken from the Figma homepage and the Claude Design artboards. */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #111b2c;
+  --color-subtle: #3d4859;
+  --color-muted: #647083;
+  --color-steel: #b8c2d4;
+  --color-line: #dce1e9;
+  --color-surface: #f3f5f8;
+
+  --color-brand: #234dfa;
+  --color-brand-hover: #1a3bc4;
+  --color-brand-soft: #eaf0ff;
+  --color-brand-light: #8ba5ff;
+
+  --color-navy: #0e1728;
+  --color-navy-raised: #1b2740;
+  --color-navy-line: #2c3749;
+  --color-navy-border: #364154;
+
+  --color-success: #187052;
+  --color-success-soft: #e7f3ee;
+  --color-danger: #b42318;
+  --color-warning: #6b4300;
+  --color-warning-soft: #fff4dc;
+}
+
+/* The shop's content column: 1312px of content with a 24px gutter. */
+@utility shop-container {
+  margin-inline: auto;
+  max-width: 1360px;
+  padding-inline: 24px;
+  box-sizing: border-box;
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-surface text-ink;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+}

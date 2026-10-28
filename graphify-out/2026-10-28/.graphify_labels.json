@@ -1,0 +1,19 @@
+{
+  "1": "Category Page & Filters",
+  "3": "Seed Catalog Data",
+  "4": "Payload Generated Types",
+  "7": "Project Docs & Handoff",
+  "8": "TypeScript Config",
+  "9": "Runtime Dependencies",
+  "10": "Dev Dependencies",
+  "11": "NPM Scripts",
+  "12": "Local Postgres (Docker)",
+  "13": "Database Migrations",
+  "24": "pnpm Build Approvals",
+  "25": "Prettier Config",
+  "27": "ESLint Config",
+  "28": "Vercel Cron",
+  "29": "Design Tokens Notes",
+  "36": "PostCSS Config",
+  "37": "Housekeeping Notes"
+}

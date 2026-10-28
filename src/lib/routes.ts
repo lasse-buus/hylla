@@ -1,0 +1,21 @@
+/** URL builders for the shop, so links stay consistent across components. */
+export const routes = {
+  home: '/',
+  cart: '/handlekurv',
+  checkout: '/kassen',
+  orderConfirmation: '/kassen/bekreftelse',
+  account: '/min-side',
+  accountOrders: '/min-side/ordrer',
+  accountOrder: (orderNumber: number) => `/min-side/ordrer/${orderNumber}`,
+  accountAddresses: '/min-side/adresser',
+  accountProfile: '/min-side/profil',
+  accountNotifications: '/min-side/varsler',
+  login: '/logg-inn',
+  search: '/sok',
+  deals: '/tilbud',
+  guides: '/guider',
+  customerService: '/kundeservice',
+  category: (slug: string) => `/kategori/${slug}`,
+  product: (slug: string) => `/produkt/${slug}`,
+  guide: (slug: string) => `/guider/${slug}`,
+}
