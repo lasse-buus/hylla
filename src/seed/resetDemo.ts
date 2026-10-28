@@ -336,7 +336,11 @@ async function upsertMedia(payload: Payload): Promise<Record<string, ID>> {
     const filePath = path.join(IMAGE_DIR, image.file)
     if (!fs.existsSync(filePath)) throw new Error(`Seed: mangler bildefil ${filePath}`)
 
-    const created = await payload.create({ collection: 'media', data: { alt: image.alt }, filePath })
+    const created = await payload
+      .create({ collection: 'media', data: { alt: image.alt }, filePath })
+      .catch((error: unknown) => {
+        throw new Error(`Seed: kunne ikke laste opp ${image.file}: ${error instanceof Error ? error.message : String(error)}`)
+      })
     ids[image.file] = created.id
   }
 

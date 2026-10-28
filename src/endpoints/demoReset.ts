@@ -19,8 +19,14 @@ export const demoResetEndpoint: Endpoint = {
       return Response.json({ error: 'Ikke tilgang' }, { status: 401 })
     }
 
-    const summary = await resetDemo(req.payload)
-
-    return Response.json({ ok: true, ...summary })
+    try {
+      const summary = await resetDemo(req.payload)
+      return Response.json({ ok: true, ...summary })
+    } catch (error) {
+      // Only the cron job or an admin gets here, so the real cause is safe to show (and it is logged for Vercel).
+      req.payload.logger.error({ err: error }, '[demo-reset] Feilet')
+      const message = error instanceof Error ? error.message : String(error)
+      return Response.json({ ok: false, error: message }, { status: 500 })
+    }
   },
 }
