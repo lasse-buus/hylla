@@ -4,6 +4,7 @@
   "description": "Hylla – fiktiv norsk nettbutikk for elektronikk, bygget med Next.js og Payload",
   "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@12.15.0",
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
