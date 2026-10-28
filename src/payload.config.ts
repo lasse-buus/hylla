@@ -125,6 +125,8 @@ export default buildConfig({
     }),
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      // Add the plugin's media fields even locally (no token), so migrations match production.
+      alwaysInsertFields: true,
       collections: { media: true },
       token: process.env.BLOB_READ_WRITE_TOKEN,
     }),
