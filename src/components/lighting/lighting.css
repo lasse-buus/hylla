@@ -1,0 +1,125 @@
+/*
+ * Lys og pærer: the Dag/Kveld preview.
+ * In Kveld the room (the page inside <main>) swaps the design tokens for dark ones; header and footer keep theirs.
+ * The tokens are registered as colours so they can fade, which fades everything that uses them.
+ */
+@property --color-ink { syntax: '<color>'; inherits: true; initial-value: #111b2c; }
+@property --color-subtle { syntax: '<color>'; inherits: true; initial-value: #3d4859; }
+@property --color-muted { syntax: '<color>'; inherits: true; initial-value: #647083; }
+@property --color-line { syntax: '<color>'; inherits: true; initial-value: #dce1e9; }
+@property --color-surface { syntax: '<color>'; inherits: true; initial-value: #f3f5f8; }
+@property --color-card { syntax: '<color>'; inherits: true; initial-value: #ffffff; }
+@property --color-accent { syntax: '<color>'; inherits: true; initial-value: #234dfa; }
+/* The chosen scene's two colours, and the light one bulb gives in it. */
+@property --scene { syntax: '<color>'; inherits: true; initial-value: #ffc477; }
+@property --scene2 { syntax: '<color>'; inherits: true; initial-value: #ffad5c; }
+@property --bulb { syntax: '<color>'; inherits: true; initial-value: #ffc477; }
+@property --bulb2 { syntax: '<color>'; inherits: true; initial-value: #ffad5c; }
+
+.light-room {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  transition:
+    --color-ink 0.6s ease,
+    --color-subtle 0.6s ease,
+    --color-muted 0.6s ease,
+    --color-line 0.6s ease,
+    --color-surface 0.6s ease,
+    --color-card 0.6s ease,
+    --color-accent 0.6s ease,
+    --scene 0.6s ease,
+    --scene2 0.6s ease;
+}
+
+/* Contrast checked against the card colour. */
+.light-room[data-lit='true'] {
+  --color-ink: #f3f5f8;
+  --color-subtle: #a7b0c0;
+  --color-muted: #a7b0c0;
+  --color-line: #262d3a;
+  --color-surface: #0e1118;
+  --color-card: #161b25;
+  --color-accent: #8ea6ff;
+  color-scheme: dark;
+}
+
+.light-room__photo {
+  transition: filter 0.6s ease;
+}
+
+.light-room[data-lit='true'] .light-room__photo {
+  filter: brightness(0.42) saturate(0.8);
+}
+
+.light-room__glow {
+  background:
+    radial-gradient(circle at 30% 40%, color-mix(in srgb, var(--scene) 85%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 78% 70%, color-mix(in srgb, var(--scene2) 70%, transparent) 0%, transparent 40%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.light-room[data-lit='true'] .light-room__glow {
+  opacity: 1;
+}
+
+.light-toggle__knob {
+  left: 3px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgb(17 27 44 / 0.3);
+  transition:
+    left 0.3s ease,
+    background-color 0.6s ease,
+    box-shadow 0.6s ease;
+}
+
+[aria-pressed='true'] > * > .light-toggle__knob {
+  left: 23px;
+  background-color: var(--scene);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--scene) 90%, transparent);
+}
+
+/* A product tile: the unlit bulb on light grey, or the lit bulb glowing in a dark room. */
+.bulb-tile {
+  background: linear-gradient(180deg, #f6f7f9 0%, #e9ecf0 100%);
+  transition:
+    --bulb 0.6s ease,
+    --bulb2 0.6s ease;
+}
+
+.bulb-tile__night {
+  background:
+    radial-gradient(
+      circle at 50% 46%,
+      color-mix(in srgb, var(--bulb) var(--glow), transparent) 0%,
+      color-mix(in srgb, var(--bulb) var(--glow-edge), transparent) 38%,
+      transparent 70%
+    ),
+    #0c0f15;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.bulb-tile[data-lit='true'] .bulb-tile__night {
+  opacity: 1;
+}
+
+.bulb-tile svg * {
+  transition:
+    fill 0.6s ease,
+    stroke 0.6s ease,
+    opacity 0.6s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .light-room,
+  .light-room__photo,
+  .light-room__glow,
+  .light-toggle__knob,
+  .bulb-tile,
+  .bulb-tile__night,
+  .bulb-tile svg * {
+    transition: none;
+  }
+}

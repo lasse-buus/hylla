@@ -5,6 +5,7 @@ import { getPayload } from 'payload'
 import { cache } from 'react'
 
 import { formatKroner } from './format'
+import { type Capability, type Illustration, lightColorOf, lightTypeOf } from './lighting'
 import { type ImageData, toImage } from './media'
 import type { FilterableProduct } from './productFilters'
 import { routes } from './routes'
@@ -19,6 +20,17 @@ export type ProductSummary = FilterableProduct & {
   tag: string | null
   /** Variant products are bought from the product page, where a variant is chosen. */
   hasVariants: boolean
+  /** Smart lighting is shown as a drawn bulb that can be lit, not a photo. */
+  bulb: Bulb | null
+}
+
+export type Bulb = {
+  capability: Capability
+  illustration: Illustration
+  /** Globe: opal glass rather than clear. */
+  opal: boolean
+  /** Lightstrip: shows the scene's two colours at once. */
+  gradient: boolean
 }
 
 export type GuideSummary = {
@@ -75,6 +87,8 @@ const productTag = (product: Product): string | null => {
 
 export const toProductSummary = (product: Product, slugByID = new Map<number, string>()): ProductSummary => {
   const brand = asDoc<Brand>(product.brand)
+  const { capability, illustration, opal, gradient, socket, worksWith } = product.lighting ?? {}
+  const bulb = capability && illustration ? { capability, illustration, opal: Boolean(opal), gradient: Boolean(gradient) } : null
 
   return {
     id: product.id,
@@ -86,6 +100,11 @@ export const toProductSummary = (product: Product, slugByID = new Map<number, st
     image: toImage(product.gallery?.[0]),
     tag: productTag(product),
     hasVariants: Boolean(product.enableVariants),
+    bulb,
+    lightColor: bulb ? lightColorOf(bulb.capability) : null,
+    lightType: bulb ? lightTypeOf(bulb.illustration) : null,
+    socket: socket ?? null,
+    worksWith: worksWith ?? [],
     price: product.priceInNOK ?? 0,
     compareAtPrice: product.compareAtPrice ?? null,
     inventory: product.inventory ?? 0,

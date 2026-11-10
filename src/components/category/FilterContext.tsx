@@ -62,7 +62,7 @@ export function SortSelect() {
       <select
         value={state.sort}
         onChange={(event) => apply({ ...state, sort: event.target.value as SortKey, page: 1 })}
-        className="h-10 rounded-md border border-line bg-white px-3 text-[13px] font-semibold text-ink"
+        className="h-10 rounded-md border border-line bg-card px-3 text-[13px] font-semibold text-ink"
       >
         {sortOptions.map((option) => (
           <option key={option.value} value={option.value}>
@@ -85,7 +85,7 @@ export function LoadMoreLink() {
         event.preventDefault()
         apply(next)
       }}
-      className="inline-flex h-12 items-center rounded-md border-[1.5px] border-ink bg-white px-7 text-sm font-semibold hover:bg-surface"
+      className="inline-flex h-12 items-center rounded-md border-[1.5px] border-ink bg-card px-7 text-sm font-semibold hover:bg-surface"
     >
       Vis flere produkter
     </a>

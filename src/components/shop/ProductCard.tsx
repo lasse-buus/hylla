@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { AddToCartButton } from '@/components/cart/AddToCartButton'
+import { BulbTile } from '@/components/lighting/BulbTile'
 import { formatPrice, formatStock } from '@/lib/format'
 
 import { formatRating, StarRating } from './StarRating'
@@ -25,9 +26,11 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
   const onSale = product.compareAtPrice !== null && product.compareAtPrice > product.price
 
   return (
-    <article className="relative flex h-full flex-col rounded-xl bg-white p-5">
-      <div className="relative mb-3.5 h-[190px] overflow-hidden rounded-lg bg-white">
-        {product.image ? (
+    <article className="relative flex h-full flex-col rounded-xl bg-card p-5">
+      <div className="relative mb-3.5 h-[190px] overflow-hidden rounded-lg bg-card">
+        {product.bulb ? (
+          <BulbTile bulb={product.bulb} title={product.title} />
+        ) : product.image ? (
           <Image
             src={product.image.url}
             alt={product.image.alt}

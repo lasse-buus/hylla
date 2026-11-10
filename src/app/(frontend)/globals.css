@@ -10,11 +10,15 @@
   --color-steel: #b8c2d4;
   --color-line: #dce1e9;
   --color-surface: #f3f5f8;
+  /* Cards and panels on the surface. A token of its own so «Lys og pærer» can turn the room dark. */
+  --color-card: #ffffff;
 
   --color-brand: #234dfa;
   --color-brand-hover: #1a3bc4;
   --color-brand-soft: #eaf0ff;
   --color-brand-light: #8ba5ff;
+  /* Brand-coloured text and outlines that must stay readable when the surface turns dark. */
+  --color-accent: #234dfa;
 
   --color-navy: #0e1728;
   --color-navy-raised: #1b2740;
@@ -46,7 +50,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 }

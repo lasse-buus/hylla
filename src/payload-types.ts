@@ -288,6 +288,7 @@ export interface Category {
    */
   menuGroup?: string | null;
   sortOrder?: number | null;
+  layout?: ('standard' | 'lighting') | null;
   /**
    * Ikon som vises på kategorikortene.
    */
@@ -404,6 +405,20 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Fylles bare ut for smart belysning. Velg lysfarge og illustrasjon for å vise pæra på produktkortet.
+   */
+  lighting?: {
+    capability?: ('white' | 'ambiance' | 'color' | 'filament' | 'bridge') | null;
+    illustration?: ('a60' | 'globe' | 'gu10' | 'strip' | 'go' | 'iris' | 'candle' | 'bridge') | null;
+    opal?: boolean | null;
+    gradient?: boolean | null;
+    socket?: ('E27' | 'E14' | 'GU10') | null;
+    lumen?: number | null;
+    kelvinMin?: number | null;
+    kelvinMax?: number | null;
+    worksWith?: ('bridge' | 'bluetooth' | 'matter' | 'apple-home')[] | null;
+  };
   /**
    * Lages automatisk fra «title» hvis feltet er tomt.
    */
@@ -1080,6 +1095,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   parent?: T;
   menuGroup?: T;
   sortOrder?: T;
+  layout?: T;
   icon?: T;
   description?: T;
   heroImage?: T;
@@ -1282,6 +1298,19 @@ export interface ProductsSelect<T extends boolean = true> {
         question?: T;
         answer?: T;
         id?: T;
+      };
+  lighting?:
+    | T
+    | {
+        capability?: T;
+        illustration?: T;
+        opal?: T;
+        gradient?: T;
+        socket?: T;
+        lumen?: T;
+        kelvinMin?: T;
+        kelvinMax?: T;
+        worksWith?: T;
       };
   slug?: T;
   sku?: T;

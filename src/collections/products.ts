@@ -3,6 +3,7 @@ import type { Field } from 'payload'
 
 import { slugField } from '@/fields/slug'
 import { revalidateNavigationAfterChange, revalidateNavigationAfterDelete } from '@/hooks/revalidateNavigation'
+import { capabilityOptions, illustrationOptions, socketOptions, worksWithOptions } from '@/lib/lighting'
 
 const badgeOptions = [
   { label: 'Ingen', value: 'none' },
@@ -116,6 +117,52 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
     },
   ]
 
+  // Smart lighting: drives the drawn bulb, the Dag/Kveld preview and the lighting filters on «Lys og pærer».
+  const lightingFields: Field[] = [
+    {
+      name: 'lighting',
+      label: 'Belysning',
+      type: 'group',
+      admin: { description: 'Fylles bare ut for smart belysning. Velg lysfarge og illustrasjon for å vise pæra på produktkortet.' },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'capability', label: 'Lysfarge', type: 'select', options: [...capabilityOptions] },
+            { name: 'illustration', label: 'Illustrasjon', type: 'select', options: [...illustrationOptions] },
+          ],
+        },
+        {
+          name: 'opal',
+          label: 'Opalglass (ikke klart glass)',
+          type: 'checkbox',
+          admin: { condition: (_, siblingData) => siblingData?.illustration === 'globe' },
+        },
+        {
+          name: 'gradient',
+          label: 'Viser flere farger samtidig',
+          type: 'checkbox',
+          admin: { condition: (_, siblingData) => siblingData?.illustration === 'strip' },
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'socket', label: 'Sokkel', type: 'select', options: [...socketOptions] },
+            { name: 'lumen', label: 'Lysstyrke (lumen)', type: 'number', min: 0 },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'kelvinMin', label: 'Fargetemperatur fra (K)', type: 'number', min: 0 },
+            { name: 'kelvinMax', label: 'Fargetemperatur til (K)', type: 'number', min: 0 },
+          ],
+        },
+        { name: 'worksWith', label: 'Fungerer med', type: 'select', hasMany: true, options: [...worksWithOptions] },
+      ],
+    },
+  ]
+
   return {
     ...defaultCollection,
     labels: { singular: 'Produkt', plural: 'Produkter' },
@@ -151,6 +198,7 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
             ],
           },
           { label: 'Spesifikasjoner', fields: specFields },
+          { label: 'Belysning', fields: lightingFields },
         ],
       },
       slugField('title'),

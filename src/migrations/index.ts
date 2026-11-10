@@ -7,6 +7,7 @@ import * as migration_20261028_013403_faq_follow_ups from './20261028_013403_faq
 import * as migration_20261028_111103_min_side_account from './20261028_111103_min_side_account';
 import * as migration_20261028_160209_order_placed_via_no_default from './20261028_160209_order_placed_via_no_default';
 import * as migration_20261028_233353_media_blob_fields from './20261028_233353_media_blob_fields';
+import * as migration_20261110_135052_lighting from './20261110_135052_lighting';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20261028_233353_media_blob_fields.up,
     down: migration_20261028_233353_media_blob_fields.down,
-    name: '20261028_233353_media_blob_fields'
+    name: '20261028_233353_media_blob_fields',
+  },
+  {
+    up: migration_20261110_135052_lighting.up,
+    down: migration_20261110_135052_lighting.down,
+    name: '20261110_135052_lighting'
   },
 ];

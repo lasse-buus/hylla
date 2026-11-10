@@ -4,7 +4,7 @@ import { ChevronDown, SlidersHorizontal } from 'lucide-react'
 import { useId, useState } from 'react'
 
 import { StarRating } from '@/components/shop/StarRating'
-import { clearFilters, type FilterState, hasActiveFilters, ratingOptions, toggleIn } from '@/lib/productFilters'
+import { clearFilters, type FilterState, hasActiveFilters, type ListFacet, ratingOptions, toggleIn } from '@/lib/productFilters'
 
 import { useFilters } from './FilterContext'
 
@@ -13,6 +13,8 @@ export type FilterOption = { value: string; label: string; count: number }
 type FilterPanelProps = {
   categoryOptions: FilterOption[]
   brandOptions: FilterOption[]
+  /** Checkbox groups for further list filters, e.g. the lighting facets. Shown after the brands. */
+  facetGroups: { facet: ListFacet; legend: string; options: FilterOption[] }[]
   showOnSaleFilter: boolean
 }
 
@@ -20,13 +22,13 @@ const fieldsetClass = 'border-t border-line px-5 py-[18px]'
 const legendClass = 'float-left mb-3.5 w-full text-sm font-semibold'
 
 /** The filter sidebar. Collapsed behind a toggle on small screens. */
-export function FilterPanel({ categoryOptions, brandOptions, showOnSaleFilter }: FilterPanelProps) {
+export function FilterPanel({ categoryOptions, brandOptions, facetGroups, showOnSaleFilter }: FilterPanelProps) {
   const { state, apply } = useFilters()
   const [isOpen, setIsOpen] = useState(false)
   const panelID = useId()
 
   return (
-    <aside aria-label="Filtre" className="rounded-xl bg-white">
+    <aside aria-label="Filtre" className="rounded-xl bg-card">
       <div className="flex items-center justify-between p-5">
         {/* A plain heading on desktop, where the panel is always open; a toggle on small screens. */}
         <h2 className="hidden items-center gap-2.5 text-base font-bold lg:flex">
@@ -54,7 +56,7 @@ export function FilterPanel({ categoryOptions, brandOptions, showOnSaleFilter }:
           <button
             type="button"
             onClick={() => apply(clearFilters(state))}
-            className="p-1 text-[13px] font-semibold text-brand hover:underline"
+            className="p-1 text-[13px] font-semibold text-accent hover:underline"
           >
             Nullstill
           </button>
@@ -81,6 +83,16 @@ export function FilterPanel({ categoryOptions, brandOptions, showOnSaleFilter }:
             onToggle={(value) => apply(toggleIn(state, 'brands', value))}
           />
         ) : null}
+
+        {facetGroups.map(({ facet, legend, options }) => (
+          <CheckboxGroup
+            key={facet}
+            legend={legend}
+            options={options}
+            selected={state[facet]}
+            onToggle={(value) => apply(toggleIn(state, facet, value))}
+          />
+        ))}
 
         <fieldset className={fieldsetClass}>
           <legend className={legendClass}>Tilgjengelighet</legend>

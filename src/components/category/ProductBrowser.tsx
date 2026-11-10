@@ -1,9 +1,19 @@
 import type { GuideSummary, ProductSummary } from '@/lib/catalog'
 
 import { ProductCard } from '@/components/shop/ProductCard'
-import { applyFilters, facetCounts, type FilterState, hasActiveFilters } from '@/lib/productFilters'
+import { lightColorOptions, lightTypeOptions, socketOptions, worksWithOptions } from '@/lib/lighting'
+import {
+  applyFilters,
+  emptyFilters,
+  facetCounts,
+  type FilterState,
+  hasActiveFilters,
+  type ListFacet,
+  listFacetKeys,
+} from '@/lib/productFilters'
 
 import { ActiveFilters } from './ActiveFilters'
+import { FacetChips } from './FacetChips'
 import { FilterProvider, FilterResults, LoadMoreLink, SortSelect } from './FilterContext'
 import { FilterPanel } from './FilterPanel'
 import { GuidePromoCard } from './GuidePromoCard'
@@ -40,31 +50,47 @@ export function ProductBrowser({
   promoGuide = null,
   showOnSaleFilter = true,
 }: ProductBrowserProps) {
-  // Slugs that don't belong here (a stale or hand-edited URL) are dropped, so they can't hide everything.
-  const categorySlugs = new Set(categories.map((category) => category.slug))
-  const brandSlugs = new Set(brands.map((brand) => brand.slug))
-  const filters: FilterState = {
-    ...requested,
-    categories: requested.categories.filter((slug) => categorySlugs.has(slug)),
-    brands: requested.brands.filter((slug) => brandSlugs.has(slug)),
+  // Smart lighting brings its own filters; they only show where the products carry that data.
+  const hasBulbs = products.some((product) => product.bulb)
+  const choices: Record<ListFacet, readonly { value: string; label: string }[]> = {
+    categories: categories.map((category) => ({ value: category.slug, label: category.title })),
+    brands: brands.map((brand) => ({ value: brand.slug, label: brand.name })),
+    lightColors: hasBulbs ? lightColorOptions : [],
+    sockets: hasBulbs ? socketOptions : [],
+    worksWith: hasBulbs ? worksWithOptions : [],
+    lightTypes: hasBulbs ? lightTypeOptions : [],
+  }
+
+  // Values that don't belong here (a stale or hand-edited URL) are dropped, so they can't hide everything.
+  const filters: FilterState = { ...requested }
+  for (const facet of listFacetKeys) {
+    filters[facet] = requested[facet].filter((value) => choices[facet].some((choice) => choice.value === value))
   }
 
   const { total, visible, hasMore } = applyFilters(products, filters)
   const counts = facetCounts(products, filters)
-  const inAnyProduct = (slug: string) => products.some((product) => product.categorySlugs.includes(slug))
+  const available = facetCounts(products, emptyFilters)
 
-  const categoryOptions = categories
-    .filter((category) => inAnyProduct(category.slug) || filters.categories.includes(category.slug))
-    .map((category) => ({ value: category.slug, label: category.title, count: counts.categories.get(category.slug) ?? 0 }))
-  const brandOptions = brands.map((brand) => ({
-    value: brand.slug,
-    label: brand.name,
-    count: counts.brands.get(brand.slug) ?? 0,
-  }))
-  const labels = Object.fromEntries([
-    ...categories.map((category) => [category.slug, category.title]),
-    ...brands.map((brand) => [brand.slug, brand.name]),
-  ])
+  /** A filter's choices with their counts. Ones no product here has are left out. */
+  const optionsFor = (facet: ListFacet) =>
+    choices[facet]
+      .filter(({ value }) => available[facet].has(value) || filters[facet].includes(value))
+      .map(({ value, label }) => ({ value, label, count: counts[facet].get(value) ?? 0 }))
+
+  const facetGroups = (
+    [
+      { facet: 'lightColors', legend: 'Lysfarge' },
+      { facet: 'sockets', legend: 'Sokkel' },
+      { facet: 'worksWith', legend: 'Fungerer med' },
+    ] as const
+  )
+    .map((group) => ({ ...group, options: optionsFor(group.facet) }))
+    .filter((group) => group.options.length > 0)
+  const typeOptions = optionsFor('lightTypes')
+
+  const labels = Object.fromEntries(
+    listFacetKeys.map((facet) => [facet, Object.fromEntries(choices[facet].map(({ value, label }) => [value, label]))]),
+  ) as Record<ListFacet, Record<string, string>>
 
   const promoIndex = promoGuide ? Math.min(PROMO_POSITION, visible.length) : -1
   const promoItem = promoGuide ? (
@@ -75,8 +101,18 @@ export function ProductBrowser({
 
   return (
     <FilterProvider initialState={filters}>
+      {typeOptions.length > 1 ? (
+        <div className="mb-8">
+          <FacetChips label="Typer belysning" facet="lightTypes" options={typeOptions} />
+        </div>
+      ) : null}
       <section aria-labelledby="produkter-tittel" className="grid items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <FilterPanel categoryOptions={categoryOptions} brandOptions={brandOptions} showOnSaleFilter={showOnSaleFilter} />
+        <FilterPanel
+          categoryOptions={optionsFor('categories')}
+          brandOptions={optionsFor('brands')}
+          facetGroups={facetGroups}
+          showOnSaleFilter={showOnSaleFilter}
+        />
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
@@ -104,7 +140,7 @@ export function ProductBrowser({
                 {promoIndex === visible.length ? promoItem : null}
               </ul>
             ) : (
-              <div className="mt-[18px] rounded-xl bg-white px-6 py-14 text-center">
+              <div className="mt-[18px] rounded-xl bg-card px-6 py-14 text-center">
                 <p className="text-lg font-semibold">Ingen produkter matcher filtrene</p>
                 <p className="mt-2 text-sm text-muted">Prøv å fjerne et filter eller utvide prisområdet.</p>
               </div>

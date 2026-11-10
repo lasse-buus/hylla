@@ -1,3 +1,5 @@
+import type { Capability, Illustration } from '@/lib/lighting'
+
 import { paragraph, richText } from '../lexical'
 
 export type SeedImage = { file: string; alt: string }
@@ -34,6 +36,7 @@ export const brands = [
   { slug: 'luma', name: 'Luma', description: 'TV-er med skarpt bilde og enkel smart-TV.' },
   { slug: 'nova', name: 'Nova', description: 'Kontrollere og tilbehør for PC og konsoll.' },
   { slug: 'nord', name: 'Nord', description: 'Mobiler med batteri som holder følge.' },
+  { slug: 'philips-hue', name: 'Philips Hue', description: 'Smarte pærer, lysstriper og lamper du styrer fra mobilen.' },
 ]
 
 export type SeedCategory = {
@@ -45,6 +48,7 @@ export type SeedCategory = {
   sortOrder: number
   description?: string
   heroImage?: string
+  layout?: 'lighting'
   menuPromo?: { eyebrow: string; product: string; image: string; guide?: string }
 }
 
@@ -78,7 +82,7 @@ const menuTree: Record<string, [group: string, links: MenuLink[]][]> = {
   'hjem-og-kjokken': [
     ['Kjøkken', [['kaffemaskiner', 'Kaffemaskiner', 'coffee'], ['airfryere', 'Airfryere'], ['blendere', 'Blendere'], ['vannkokere', 'Vannkokere', 'coffee'], ['mikrobolgeovner', 'Mikrobølgeovner']]],
     ['Rengjøring', [['robotstovsugere', 'Robotstøvsugere', 'washing-machine'], ['stovsugere', 'Støvsugere'], ['vaskemaskiner', 'Vaskemaskiner', 'washing-machine'], ['torketromler', 'Tørketromler', 'washing-machine']]],
-    ['Smarthus', [['smarthoyttalere', 'Smarthøyttalere', 'headphones'], ['smartlys', 'Smartlys'], ['overvakingskameraer', 'Overvåkingskameraer'], ['termostater', 'Termostater']]],
+    ['Smarthus', [['smarthoyttalere', 'Smarthøyttalere', 'headphones'], ['smartlys', 'Lys og pærer'], ['overvakingskameraer', 'Overvåkingskameraer'], ['termostater', 'Termostater']]],
   ],
   tilbehor: [
     ['Strøm og lading', [['powerbanker', 'Powerbanker'], ['ladere', 'Ladere', 'cable'], ['kabler', 'Kabler', 'cable'], ['skjoteledninger', 'Skjøteledninger', 'cable']]],
@@ -87,13 +91,23 @@ const menuTree: Record<string, [group: string, links: MenuLink[]][]> = {
   ],
 }
 
+/** Subcategories with more than a menu link. */
+const subcategoryDetails: Record<string, Partial<SeedCategory>> = {
+  smartlys: {
+    layout: 'lighting',
+    heroImage: 'tv-stue.jpg',
+    description:
+      'Smarte pærer, lysstriper og lamper du styrer fra mobilen. Skru på lyset og test hvordan hver pære ser ut i stua før du handler.',
+  },
+}
+
 function subcategories(): SeedCategory[] {
   return Object.entries(menuTree).flatMap(([parent, groups]) => {
     let sortOrder = 0
     return groups.flatMap(([menuGroup, links]) =>
       links.map(([slug, title, icon]) => {
         sortOrder += 1
-        return { slug, title, parent, menuGroup, icon, sortOrder }
+        return { slug, title, parent, menuGroup, icon, sortOrder, ...subcategoryDetails[slug] }
       }),
     )
   })
@@ -179,7 +193,168 @@ export type SeedProduct = {
   related?: string[]
   variantTypes?: string[]
   variants?: SeedVariant[]
+  lighting?: SeedLighting
 }
+
+export type SeedLighting = {
+  capability: Capability
+  illustration: Illustration
+  opal?: boolean
+  gradient?: boolean
+  socket?: 'E27' | 'E14' | 'GU10'
+  lumen?: number
+  kelvinMin?: number
+  kelvinMax?: number
+  worksWith: ('bridge' | 'bluetooth' | 'matter' | 'apple-home')[]
+}
+
+type HueProduct = Pick<SeedProduct, 'slug' | 'sku' | 'title' | 'shortSpecs' | 'price' | 'inventory' | 'rating' | 'reviewCount'> &
+  Pick<SeedProduct, 'compareAtPrice' | 'badge'> & { lighting: SeedLighting }
+
+/**
+ * Philips Hue for «Lys og pærer». Prices and ratings are invented.
+ * The products have no photos: the cards draw the bulb from `lighting.illustration`.
+ */
+const hueProducts: HueProduct[] = [
+  {
+    slug: 'hue-white-and-color-ambiance-e27-2pk',
+    sku: '810101',
+    title: 'Hue White and Color Ambiance E27, 2-pk',
+    shortSpecs: 'E27 · 1 100 lm · 16 millioner farger · Bluetooth og Matter',
+    price: 1299,
+    compareAtPrice: 1599,
+    inventory: 140,
+    badge: 'bestseller',
+    rating: 4.8,
+    reviewCount: 312,
+    lighting: { capability: 'color', illustration: 'a60', socket: 'E27', lumen: 1100, kelvinMin: 2000, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'matter', 'apple-home'] },
+  },
+  {
+    slug: 'hue-white-ambiance-e27',
+    sku: '810102',
+    title: 'Hue White Ambiance E27',
+    shortSpecs: 'E27 · 1 100 lm · Varm til kald hvit, 2 200–6 500 K',
+    price: 449,
+    inventory: 64,
+    rating: 4.7,
+    reviewCount: 184,
+    lighting: { capability: 'ambiance', illustration: 'a60', socket: 'E27', lumen: 1100, kelvinMin: 2200, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'matter', 'apple-home'] },
+  },
+  {
+    slug: 'hue-filament-globe-g93-e27',
+    sku: '810103',
+    title: 'Hue Filament Globe G93 E27',
+    shortSpecs: 'E27 · 550 lm · Ekstra varm hvit, 2 100 K',
+    price: 399,
+    inventory: 24,
+    badge: 'new',
+    rating: 4.6,
+    reviewCount: 58,
+    lighting: { capability: 'filament', illustration: 'globe', socket: 'E27', lumen: 550, kelvinMin: 2100, kelvinMax: 2100, worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-white-and-color-ambiance-gu10-3pk',
+    sku: '810104',
+    title: 'Hue White and Color Ambiance GU10, 3-pk',
+    shortSpecs: 'GU10 · 400 lm · Spotter til tak og skinner',
+    price: 1499,
+    compareAtPrice: 1799,
+    inventory: 30,
+    rating: 4.7,
+    reviewCount: 97,
+    lighting: { capability: 'color', illustration: 'gu10', socket: 'GU10', lumen: 400, kelvinMin: 2000, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'matter', 'apple-home'] },
+  },
+  {
+    slug: 'hue-gradient-lightstrip-2m',
+    sku: '810105',
+    title: 'Hue Gradient Lightstrip 2 m',
+    shortSpecs: 'Flere farger samtidig · Kan forlenges · Til TV, hyller og kjøkken',
+    price: 1799,
+    inventory: 18,
+    rating: 4.6,
+    reviewCount: 141,
+    lighting: { capability: 'color', illustration: 'strip', gradient: true, worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-go-baerbar-lampe',
+    sku: '810106',
+    title: 'Hue Go bærbar lampe',
+    shortSpecs: 'Oppladbar · Opptil 3 timer uten ledning · Bord og terrasse',
+    price: 1190,
+    inventory: 12,
+    badge: 'favorite',
+    rating: 4.8,
+    reviewCount: 76,
+    lighting: { capability: 'color', illustration: 'go', worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-iris-bordlampe',
+    sku: '810107',
+    title: 'Hue Iris bordlampe',
+    shortSpecs: 'Stemningslys mot veggen · 570 lm · Hvit',
+    price: 1290,
+    inventory: 8,
+    rating: 4.7,
+    reviewCount: 49,
+    lighting: { capability: 'color', illustration: 'iris', lumen: 570, worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-white-e14-kronepaere-2pk',
+    sku: '810108',
+    title: 'Hue White E14 kronepære, 2-pk',
+    shortSpecs: 'E14 · 470 lm · Varm hvit, 2 700 K',
+    price: 349,
+    inventory: 40,
+    rating: 4.5,
+    reviewCount: 63,
+    lighting: { capability: 'white', illustration: 'candle', socket: 'E14', lumen: 470, kelvinMin: 2700, kelvinMax: 2700, worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-bridge-pro',
+    sku: '810109',
+    title: 'Hue Bridge Pro',
+    shortSpecs: 'Styr opptil 150 lys · Tidsplaner og styring borte fra hjemmet',
+    price: 999,
+    inventory: 72,
+    rating: 4.7,
+    reviewCount: 88,
+    lighting: { capability: 'bridge', illustration: 'bridge', worksWith: ['matter', 'apple-home'] },
+  },
+  {
+    slug: 'hue-startpakke-e27',
+    sku: '810110',
+    title: 'Hue startpakke E27, 3 pærer og Bridge',
+    shortSpecs: '3 × White and Color Ambiance · Bridge · Dimmerbryter',
+    price: 2490,
+    compareAtPrice: 2990,
+    inventory: 20,
+    rating: 4.9,
+    reviewCount: 204,
+    lighting: { capability: 'color', illustration: 'a60', socket: 'E27', lumen: 1100, kelvinMin: 2000, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'matter', 'apple-home'] },
+  },
+  {
+    slug: 'hue-white-ambiance-globe-g93-e27',
+    sku: '810111',
+    title: 'Hue White Ambiance Globe G93 E27',
+    shortSpecs: 'E27 · 806 lm · 2 200–6 500 K · Opalglass',
+    price: 549,
+    inventory: 16,
+    rating: 4.6,
+    reviewCount: 41,
+    lighting: { capability: 'ambiance', illustration: 'globe', opal: true, socket: 'E27', lumen: 806, kelvinMin: 2200, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'apple-home'] },
+  },
+  {
+    slug: 'hue-white-ambiance-gu10',
+    sku: '810112',
+    title: 'Hue White Ambiance GU10',
+    shortSpecs: 'GU10 · 350 lm · Varm til kald hvit',
+    price: 379,
+    inventory: 60,
+    rating: 4.6,
+    reviewCount: 52,
+    lighting: { capability: 'ambiance', illustration: 'gu10', socket: 'GU10', lumen: 350, kelvinMin: 2200, kelvinMax: 6500, worksWith: ['bridge', 'bluetooth', 'matter', 'apple-home'] },
+  },
+]
 
 export const variantTypes = [
   {
@@ -503,6 +678,12 @@ export const products: SeedProduct[] = [
     reviewCount: 31,
     gallery: ['p-mobil.jpg'],
   },
+  ...hueProducts.map((product): SeedProduct => ({
+    ...product,
+    brand: 'philips-hue',
+    categories: ['hjem-og-kjokken', 'smartlys'],
+    gallery: [],
+  })),
 ]
 
 /**

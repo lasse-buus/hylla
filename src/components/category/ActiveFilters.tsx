@@ -3,7 +3,7 @@
 import { X } from 'lucide-react'
 
 import { formatKroner } from '@/lib/format'
-import { clearFilters, type FilterState, hasActiveFilters, toggleIn } from '@/lib/productFilters'
+import { clearFilters, type FilterState, hasActiveFilters, type ListFacet, listFacetKeys, toggleIn } from '@/lib/productFilters'
 
 import { useFilters } from './FilterContext'
 
@@ -15,12 +15,13 @@ const priceLabel = (min: number | null, max: number | null) => {
   return `Opptil ${formatKroner(max ?? 0)}`
 }
 
-function chipsFor(state: FilterState, labels: Record<string, string>): Chip[] {
+export type FacetLabels = Record<ListFacet, Record<string, string>>
+
+function chipsFor(state: FilterState, labels: FacetLabels): Chip[] {
   const reset = { ...state, page: 1 }
-  const chips: Chip[] = [
-    ...state.categories.map((slug) => ({ label: labels[slug] ?? slug, next: toggleIn(state, 'categories', slug) })),
-    ...state.brands.map((slug) => ({ label: labels[slug] ?? slug, next: toggleIn(state, 'brands', slug) })),
-  ]
+  const chips: Chip[] = listFacetKeys.flatMap((facet) =>
+    state[facet].map((value) => ({ label: labels[facet][value] ?? value, next: toggleIn(state, facet, value) })),
+  )
 
   if (state.minPrice !== null || state.maxPrice !== null) {
     chips.push({ label: priceLabel(state.minPrice, state.maxPrice), next: { ...reset, minPrice: null, maxPrice: null } })
@@ -34,8 +35,8 @@ function chipsFor(state: FilterState, labels: Record<string, string>): Chip[] {
   return chips
 }
 
-/** Removable chips for the active filters. `labels` maps category and brand slugs to names. */
-export function ActiveFilters({ labels }: { labels: Record<string, string> }) {
+/** Removable chips for the active filters. `labels` names each list filter's values, e.g. category slugs. */
+export function ActiveFilters({ labels }: { labels: FacetLabels }) {
   const { state, apply } = useFilters()
   if (!hasActiveFilters(state)) return null
 

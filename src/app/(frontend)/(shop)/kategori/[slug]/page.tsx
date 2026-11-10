@@ -7,6 +7,9 @@ import { notFound } from 'next/navigation'
 import { CategoryHero } from '@/components/category/CategoryHero'
 import { ProductBrowser } from '@/components/category/ProductBrowser'
 import { SubcategoryTiles } from '@/components/category/SubcategoryTiles'
+import { BulbBuyingTips } from '@/components/lighting/BulbBuyingTips'
+import { LightingHero } from '@/components/lighting/LightingHero'
+import { LightRoom } from '@/components/lighting/LightRoom'
 import { GuideCard } from '@/components/shop/GuideCard'
 import { Breadcrumbs } from '@/components/site/Breadcrumbs'
 import { type CategoryPageData, getCategoryPage, maxDiscountPercent } from '@/lib/catalog'
@@ -44,15 +47,50 @@ export default async function CategoryPage(props: PageProps<'/kategori/[slug]'>)
   const { category, parent, subcategories, products, brands, guides, promoGuide } = data
   const filters = parseFilters(await props.searchParams)
 
+  const breadcrumbs = (
+    <Breadcrumbs
+      trail={parent ? [{ title: parent.title, href: routes.category(parent.slug ?? '') }] : []}
+      current={category.title}
+    />
+  )
+
+  // «Lys og pærer»: a Dag/Kveld switch lights every bulb on the page, and buying tips replace the guides.
+  if (category.layout === 'lighting') {
+    return (
+      <LightRoom>
+        <div className="shop-container pt-5 pb-[88px]">
+          {breadcrumbs}
+          <div className="mt-5">
+            <LightingHero
+              eyebrow={brands.length === 1 ? `${brands[0].name} hos Hylla` : `Hylla ${category.title}`}
+              title={category.title}
+              description={category.description ?? null}
+              image={toImage(category.heroImage, 'large')}
+            />
+          </div>
+          <div className="mt-7">
+            <ProductBrowser
+              products={products}
+              filters={filters}
+              categories={subcategories}
+              brands={brands}
+              scopeLabel={`i ${category.title}`}
+            />
+          </div>
+          <div className="mt-[72px]">
+            <BulbBuyingTips />
+          </div>
+        </div>
+      </LightRoom>
+    )
+  }
+
   const stockedSubcategories = subcategories.filter((subcategory) => subcategory.productCount > 0)
   const shortcuts = [...stockedSubcategories].sort((a, b) => b.productCount - a.productCount).slice(0, 3)
 
   return (
     <div className="shop-container pt-5 pb-[72px]">
-      <Breadcrumbs
-        trail={parent ? [{ title: parent.title, href: routes.category(parent.slug ?? '') }] : []}
-        current={category.title}
-      />
+      {breadcrumbs}
 
       <div className="mt-4">
         {parent ? (

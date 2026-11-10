@@ -74,6 +74,17 @@ export const Categories: CollectionConfig = {
       admin: { position: 'sidebar' },
     },
     {
+      name: 'layout',
+      label: 'Sideoppsett',
+      type: 'select',
+      defaultValue: 'standard',
+      options: [
+        { label: 'Standard', value: 'standard' },
+        { label: 'Belysning (test pærene med Dag/Kveld)', value: 'lighting' },
+      ],
+      admin: { position: 'sidebar' },
+    },
+    {
       name: 'icon',
       label: 'Ikon',
       type: 'select',

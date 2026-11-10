@@ -1,6 +1,6 @@
 # Hylla – handoff
 
-Context for picking this project up in a new session. Status as of 28 October 2026.
+Context for picking this project up in a new session. Status as of 10 November 2026.
 
 ## What this is
 
@@ -10,7 +10,7 @@ All UI copy is Norwegian (bokmål).
 
 - **Figma:** file `opZsA3Ael2wlE1S7sCdYPH`, node `5:4405`, is the original homepage.
 - **Claude Design canvas:** https://claude.ai/artifact/VbdTqtVuhwxzNBjDpTHsWN
-  - It is the design reference for every page: forside, kategori (Gaming), produkt (Vektor Core G5), guide, handlekurv, kassen and min side.
+  - It is the design reference for every page: forside, kategori (Gaming), produkt (Vektor Core G5), guide, handlekurv, kassen, min side, kundeservice and **lys og pærer** (Philips Hue, with a Dag/Kveld switch to test the bulbs).
   - It also holds shared components: header, mega menu, footer, product card and guide card.
 
 **Ground rules**
@@ -92,6 +92,7 @@ pnpm dev   # http://localhost:3000, admin at /admin
 pnpm test  # unit + DB tests (tests/*.test.ts via `payload run`; needs a seeded DB)
 node --env-file=.env tests/e2e/min-side.e2e.mjs   # browser test; needs `pnpm dev`, a fresh `pnpm seed` and Google Chrome
 node tests/e2e/search.e2e.mjs                       # live search browser test
+node tests/e2e/lys.e2e.mjs                          # Lys og pærer: Dag/Kveld, scenes and lighting filters
 ```
 
 `.env` holds `DATABASE_URL`, `PAYLOAD_SECRET`, `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` and `CRON_SECRET`. See `.env.example`.
@@ -105,6 +106,12 @@ node tests/e2e/search.e2e.mjs                       # live search browser test
 5. ~~Checkout~~ (done: `/kassen`, no payment; a demo Stripe account may come later).
 6. ~~Homepage~~ (done).
 7. ~~Min side~~ (done). Design and plan: `docs/superpowers/specs/2026-10-28-min-side-design.md`, `docs/superpowers/plans/2026-10-28-min-side.md`.
+8. ~~Lys og pærer~~ (done: `/kategori/smartlys`). Design handoff: `docs/superpowers/specs/2026-11-10-lys-og-paerer-design.md`.
+   - **Data:** categories have `layout: 'standard' | 'lighting'`; products have a `lighting` group (admin tab "Belysning"). Migration `20261110_135052_lighting`.
+   - **Preview:** `src/components/lighting`. `LightRoom` holds the Dag/Kveld state (sessionStorage `hylla-lys`) and swaps the design tokens to dark ones for its part of the page (`lighting.css`). `lightFor()` in `src/lib/lighting.ts` decides what each bulb type shows in a scene.
+   - **Cards:** `ProductCard` draws the bulb (`BulbTile`) for any product with lighting data, everywhere. Outside a `LightRoom` it is unlit.
+   - **Filters:** Lysfarge, Sokkel, Fungerer med and the type chips are list facets in `src/lib/productFilters.ts` (`listFacets`), kept in the URL.
+   - **Still open:** the Hue products have no gallery images, so their product pages show the "Bilde mangler" placeholder. The switch on the product page is not designed.
 
 ## Deploying (security checklist)
 
@@ -120,6 +127,8 @@ node tests/e2e/search.e2e.mjs                       # live search browser test
    - These are covered by `tests/access.test.ts`, `tests/demoLogin.test.ts` and `tests/hardening.test.ts`.
 
 ## Housekeeping
+
+- **Case images:** `case-images/` holds the portfolio screenshots (`00-hero.jpg` for the blog post, the rest for the gallery). They were rendered from the canvas and the local admin.
 
 - **Leftover files to delete:** `src/app/(frontend)/styles.css`, and the `.hylla-*.tar.gz` files in the root (transfer archives).
 - **Git:** not initialised yet. Commits should use the GitHub noreply email.
