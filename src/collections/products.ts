@@ -159,6 +159,16 @@ export const productsCollectionOverride: CollectionOverride = ({ defaultCollecti
           ],
         },
         { name: 'worksWith', label: 'Fungerer med', type: 'select', hasMany: true, options: [...worksWithOptions] },
+        {
+          name: 'litImage',
+          label: 'Bilde med lyset på',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            description:
+              'Pæra tent med hvitt lys mot mørk bakgrunn. Vises i «Kveld» og farges etter valgt scene. Første bilde i galleriet er pæra avslått. Uten disse to bildene tegnes pæra.',
+          },
+        },
       ],
     },
   ]

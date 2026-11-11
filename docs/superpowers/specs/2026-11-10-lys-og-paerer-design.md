@@ -65,6 +65,8 @@ Filament: `#ffb257`. Bridge LED: `#4aa3ff`.
 
 ## Product images
 
+> Update 11 November 2026: the cards now use AI-generated, unbranded photos (unlit and lit) instead of the drawings below. The drawings remain as the fallback. See step 8 in `HANDOFF.md`.
+
 - The tiles are **drawn SVG bulbs**, not photos. Each one has a lit and an unlit state.
 - **Do not use Philips' product photos or logo.** The brand and product names are real, but the images are Hylla's own.
 - There are eight shapes, one per `illustration` value:

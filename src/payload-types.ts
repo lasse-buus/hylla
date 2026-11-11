@@ -418,6 +418,10 @@ export interface Product {
     kelvinMin?: number | null;
     kelvinMax?: number | null;
     worksWith?: ('bridge' | 'bluetooth' | 'matter' | 'apple-home')[] | null;
+    /**
+     * Pæra tent med hvitt lys mot mørk bakgrunn. Vises i «Kveld» og farges etter valgt scene. Første bilde i galleriet er pæra avslått. Uten disse to bildene tegnes pæra.
+     */
+    litImage?: (number | null) | Media;
   };
   /**
    * Lages automatisk fra «title» hvis feltet er tomt.
@@ -1311,6 +1315,7 @@ export interface ProductsSelect<T extends boolean = true> {
         kelvinMin?: T;
         kelvinMax?: T;
         worksWith?: T;
+        litImage?: T;
       };
   slug?: T;
   sku?: T;

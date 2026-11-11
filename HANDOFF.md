@@ -109,9 +109,10 @@ node tests/e2e/lys.e2e.mjs                          # Lys og pærer: Dag/Kveld, 
 8. ~~Lys og pærer~~ (done: `/kategori/smartlys`). Design handoff: `docs/superpowers/specs/2026-11-10-lys-og-paerer-design.md`.
    - **Data:** categories have `layout: 'standard' | 'lighting'`; products have a `lighting` group (admin tab "Belysning"). Migration `20261110_135052_lighting`.
    - **Preview:** `src/components/lighting`. `LightRoom` holds the Dag/Kveld state (sessionStorage `hylla-lys`) and swaps the design tokens to dark ones for its part of the page (`lighting.css`). `lightFor()` in `src/lib/lighting.ts` decides what each bulb type shows in a scene.
-   - **Cards:** `ProductCard` draws the bulb (`BulbTile`) for any product with lighting data, everywhere. Outside a `LightRoom` it is unlit.
+   - **Cards:** `ProductCard` shows a `BulbTile` for any product with lighting data, everywhere. Outside a `LightRoom` it is unlit.
+   - **Photos:** each Hue product has an unlit photo (first gallery image) and a lit one (`lighting.litImage`, white light on a dark background; migration `20261111_152439_lighting_lit_image`). In Kveld the lit photo fades in and is tinted to the bulb's colour with a multiply layer. The photos are AI-generated and unbranded, one pair per shape (`src/seed/images/hue-*-av.jpg` / `-pa.jpg`); the originals are in the Figma file `K3weoHam7dOhz2L9sdvpi4`. A lighting product without both photos falls back to the drawn bulb (`BulbIllustration`).
    - **Filters:** Lysfarge, Sokkel, Fungerer med and the type chips are list facets in `src/lib/productFilters.ts` (`listFacets`), kept in the URL.
-   - **Still open:** the Hue products have no gallery images, so their product pages show the "Bilde mangler" placeholder. The switch on the product page is not designed.
+   - **Still open:** the switch on the product page is not designed (its gallery shows the unlit and the lit photo).
 
 ## Deploying (security checklist)
 

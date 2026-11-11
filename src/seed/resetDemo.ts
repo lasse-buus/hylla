@@ -119,6 +119,7 @@ export async function resetDemo(payload: Payload) {
         kelvinMin: product.lighting?.kelvinMin ?? null,
         kelvinMax: product.lighting?.kelvinMax ?? null,
         worksWith: product.lighting?.worksWith ?? [],
+        litImage: product.lighting?.litImage ? media(product.lighting.litImage) : null,
       },
       enableVariants: Boolean(product.variants?.length),
       variantTypes: (product.variantTypes ?? []).map((name) => mustGet(variantTypeIDs, name, 'varianttype')),

@@ -105,6 +105,22 @@
   opacity: 1;
 }
 
+/* Photos: the lit photo (white light, dark room) fades in over the unlit one, tinted to the bulb's colour. */
+.bulb-tile__lit {
+  isolation: isolate;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.bulb-tile[data-lit='true'] .bulb-tile__lit {
+  opacity: 1;
+}
+
+.bulb-tile__tint {
+  background: linear-gradient(90deg, var(--bulb), var(--bulb2));
+  mix-blend-mode: multiply;
+}
+
 .bulb-tile svg * {
   transition:
     fill 0.6s ease,
@@ -119,6 +135,7 @@
   .light-toggle__knob,
   .bulb-tile,
   .bulb-tile__night,
+  .bulb-tile__lit,
   .bulb-tile svg * {
     transition: none;
   }

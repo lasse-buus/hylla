@@ -29,7 +29,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
     <article className="relative flex h-full flex-col rounded-xl bg-card p-5">
       <div className="relative mb-3.5 h-[190px] overflow-hidden rounded-lg bg-card">
         {product.bulb ? (
-          <BulbTile bulb={product.bulb} title={product.title} />
+          <BulbTile bulb={product.bulb} title={product.title} image={product.image} />
         ) : product.image ? (
           <Image
             src={product.image.url}

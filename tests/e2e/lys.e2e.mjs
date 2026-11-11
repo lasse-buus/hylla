@@ -20,9 +20,10 @@ try {
   assert.equal(await browser.evaluate(`document.querySelector('h1').textContent`), 'Lys og pærer')
   assert.equal(await browser.evaluate(`${toggle}.getAttribute('aria-pressed')`), 'false')
   assert.equal(await browser.evaluate(pageColor), 'rgb(243, 245, 248)')
-  assert.equal(await browser.evaluate(`document.querySelectorAll('article svg[role=img]').length`), 12)
+  assert.equal(await browser.evaluate(`document.querySelectorAll('article .bulb-tile > img').length`), 12)
   assert.equal(await browser.evaluate(`document.querySelectorAll('.bulb-tile p').length`), 0)
-  ok('Dag: 12 unlit bulbs on a light page')
+  assert.equal(await browser.evaluate(`getComputedStyle(document.querySelector('.bulb-tile__lit')).opacity`), '0')
+  ok('Dag: 12 unlit bulb photos on a light page')
 
   // The switch turns the room dark; the shop chrome stays light.
   await browser.click(toggle)
@@ -32,6 +33,7 @@ try {
   assert.equal(await browser.evaluate(`getComputedStyle(document.querySelector('header')).colorScheme`), 'normal')
   assert.equal(await browser.evaluate(`getComputedStyle(document.body).backgroundColor`), 'rgb(243, 245, 248)')
   assert.equal(await browser.evaluate(`document.querySelectorAll('.bulb-tile[data-lit=true]').length`), 12)
+  assert.equal(await browser.evaluate(`getComputedStyle(document.querySelector('.bulb-tile__lit')).opacity`), '1')
   ok('Kveld: the room is dark and every bulb is lit')
 
   // Nordlys: a colour bulb shows it, an Ambiance bulb can't and says so.

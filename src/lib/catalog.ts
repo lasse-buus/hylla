@@ -20,7 +20,7 @@ export type ProductSummary = FilterableProduct & {
   tag: string | null
   /** Variant products are bought from the product page, where a variant is chosen. */
   hasVariants: boolean
-  /** Smart lighting is shown as a drawn bulb that can be lit, not a photo. */
+  /** Smart lighting: the card's picture can be lit (see BulbTile). */
   bulb: Bulb | null
 }
 
@@ -31,6 +31,8 @@ export type Bulb = {
   opal: boolean
   /** Lightstrip: shows the scene's two colours at once. */
   gradient: boolean
+  /** The product lit with white light in a dark room, tinted to the scene in Kveld. The product's own image is it unlit. */
+  litImage: ImageData | null
 }
 
 export type GuideSummary = {
@@ -87,8 +89,11 @@ const productTag = (product: Product): string | null => {
 
 export const toProductSummary = (product: Product, slugByID = new Map<number, string>()): ProductSummary => {
   const brand = asDoc<Brand>(product.brand)
-  const { capability, illustration, opal, gradient, socket, worksWith } = product.lighting ?? {}
-  const bulb = capability && illustration ? { capability, illustration, opal: Boolean(opal), gradient: Boolean(gradient) } : null
+  const { capability, illustration, opal, gradient, socket, worksWith, litImage } = product.lighting ?? {}
+  const bulb =
+    capability && illustration
+      ? { capability, illustration, opal: Boolean(opal), gradient: Boolean(gradient), litImage: toImage(litImage) }
+      : null
 
   return {
     id: product.id,

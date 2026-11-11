@@ -27,6 +27,21 @@ export const images: SeedImage[] = [
   { file: 'tv-stue.jpg', alt: 'TV på veggen i en lun stue om kvelden' },
   { file: 'vaskerom.jpg', alt: 'Vaskemaskin i et lyst vaskerom' },
   { file: 'lifestyle-kaffe.jpg', alt: 'Espressomaskin på kjøkkenbenken' },
+  // Smart lighting: one unbranded, AI-generated photo pair per shape, unlit («av») and lit with white light («pa»).
+  ...Object.entries({
+    a60: 'Smart LED-pære med E27-sokkel',
+    globe: 'Globepære i klart glass med synlig glødetråd',
+    'globe-opal': 'Globepære i opalglass',
+    gu10: 'Smart GU10-spot',
+    candle: 'Smart kronepære med E14-sokkel',
+    strip: 'Lysstripe med kontrollboks',
+    go: 'Bærbar kuppelformet lampe',
+    iris: 'Rund bordlampe',
+    bridge: 'Hvit, kvadratisk smarthub',
+  }).flatMap(([shape, alt]) => [
+    { file: `hue-${shape}-av.jpg`, alt },
+    { file: `hue-${shape}-pa.jpg`, alt: `${alt}, med lyset på` },
+  ]),
 ]
 
 export const brands = [
@@ -206,6 +221,7 @@ export type SeedLighting = {
   kelvinMin?: number
   kelvinMax?: number
   worksWith: ('bridge' | 'bluetooth' | 'matter' | 'apple-home')[]
+  litImage?: string
 }
 
 type HueProduct = Pick<SeedProduct, 'slug' | 'sku' | 'title' | 'shortSpecs' | 'price' | 'inventory' | 'rating' | 'reviewCount'> &
@@ -213,7 +229,7 @@ type HueProduct = Pick<SeedProduct, 'slug' | 'sku' | 'title' | 'shortSpecs' | 'p
 
 /**
  * Philips Hue for «Lys og pærer». Prices and ratings are invented.
- * The products have no photos: the cards draw the bulb from `lighting.illustration`.
+ * The photos are generic and shared per shape; they are not Philips' own.
  */
 const hueProducts: HueProduct[] = [
   {
@@ -678,12 +694,18 @@ export const products: SeedProduct[] = [
     reviewCount: 31,
     gallery: ['p-mobil.jpg'],
   },
-  ...hueProducts.map((product): SeedProduct => ({
-    ...product,
-    brand: 'philips-hue',
-    categories: ['hjem-og-kjokken', 'smartlys'],
-    gallery: [],
-  })),
+  ...hueProducts.map((product): SeedProduct => {
+    const shape = `${product.lighting.illustration}${product.lighting.opal ? '-opal' : ''}`
+    const [unlit, lit] = [`hue-${shape}-av.jpg`, `hue-${shape}-pa.jpg`]
+
+    return {
+      ...product,
+      brand: 'philips-hue',
+      categories: ['hjem-og-kjokken', 'smartlys'],
+      gallery: [unlit, lit],
+      lighting: { ...product.lighting, litImage: lit },
+    }
+  }),
 ]
 
 /**

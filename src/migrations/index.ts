@@ -8,6 +8,7 @@ import * as migration_20261028_111103_min_side_account from './20261028_111103_m
 import * as migration_20261028_160209_order_placed_via_no_default from './20261028_160209_order_placed_via_no_default';
 import * as migration_20261028_233353_media_blob_fields from './20261028_233353_media_blob_fields';
 import * as migration_20261110_135052_lighting from './20261110_135052_lighting';
+import * as migration_20261111_152439_lighting_lit_image from './20261111_152439_lighting_lit_image';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261110_135052_lighting.up,
     down: migration_20261110_135052_lighting.down,
-    name: '20261110_135052_lighting'
+    name: '20261110_135052_lighting',
+  },
+  {
+    up: migration_20261111_152439_lighting_lit_image.up,
+    down: migration_20261111_152439_lighting_lit_image.down,
+    name: '20261111_152439_lighting_lit_image'
   },
 ];
